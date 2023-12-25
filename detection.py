@@ -142,7 +142,7 @@ class DetectionModel:
             self.logging.error("Model name doesn't match expected format: " + str(model_name))
             self.loaded = False
 
-    def analyze(self, file_path, threshold=-1, return_image=True):
+    def analyze(self, file_path, threshold=-1, return_image=True, render_detection=False):
         """
         analyze image and return image including annotations as well as analyzed values as dict
         """
@@ -184,8 +184,15 @@ class DetectionModel:
         # print(results.pandas().xyxy[0]["name"])
         img = None
         if return_image:
-            img = np.squeeze(results.render(threshold))
+            if render_detection:
+                img = np.squeeze(results.render(threshold))
             img = cv2.cvtColor(np.array(img), cv2.COLOR_BGR2RGB)
 
         return img, detect_info
+
+    def analyze_file(self):
+        pass
+
+    def analyze_image(self):
+        pass
 
