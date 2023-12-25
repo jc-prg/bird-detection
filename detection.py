@@ -106,19 +106,11 @@ class DetectionModel:
 
     def load(self, model_name=""):
         """Load custom detection model or default model defined above"""
-        if model_name == "":
-            try:
-                self.logging.info("Load default model ...")
-                self.model = torch.hub.load(self.repro_default, self.repro_default_model)
-                self.loaded = True
-            except Exception as e:
-                self.logging.error("Could not load default detection model '" + self.repro_default + "': " + str(e))
-                self.loaded = False
-                self.logging.info("OK.")
-        elif model_name is None:
+        if model_name is None:
             self.logging.error("No model given to be loaded!")
             self.loaded = False
-        else:
+
+        elif ".pt" in model_name:
             try:
                 self.logging.info("Load custom model '" + model_name + "' ...")
                 self.model = torch.hub.load(self.repro_default, 'custom', path=model_name, force_reload=True)
@@ -127,6 +119,23 @@ class DetectionModel:
             except Exception as e:
                 self.logging.error("Could not load default detection model '" + model_name + "': " + str(e))
                 self.loaded = False
+
+        elif model_name == "" or "yolov5" in model_name:
+            try:
+                selected_name = self.repro_default
+                if model_name != "":
+                    selected_name = model_name
+                self.logging.info("Load default model ...")
+                self.model = torch.hub.load(selected_name, self.repro_default_model)
+                self.loaded = True
+            except Exception as e:
+                self.logging.error("Could not load default detection model '" + self.repro_default + "': " + str(e))
+                self.loaded = False
+                self.logging.info("OK.")
+
+        else:
+            self.logging.error("Model name doesn't match expected format: " + str(model_name))
+            self.loaded = False
 
     def analyze(self, file_path, threshold=-1, return_image=True):
         """
