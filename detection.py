@@ -108,10 +108,9 @@ class DetectionModel:
         """Load custom detection model or default model defined above"""
         if model_name == "":
             try:
-                self.logging.info("Loading default model ... ")
+                self.logging.info("Load default model: ")
                 self.model = torch.hub.load(self.repro_default, self.repro_default_model)
                 self.loaded = True
-                self.logging.info("OK.")
             except Exception as e:
                 self.logging.error("Could not load default detection model '" + self.repro_default + "': " + str(e))
                 self.loaded = False
@@ -120,12 +119,11 @@ class DetectionModel:
             self.loaded = False
         else:
             try:
-                self.logging.info("Loading custom model '" + str(model_name) + "' ...")
+                self.logging.info("Load custom model '" + model_name + "':")
                 self.model = torch.hub.load(self.repro_default, 'custom', path=model_name, force_reload=True)
                 self.loaded = True
-                self.logging.info("OK.")
             except Exception as e:
-                self.logging.error("Could not load default detection model '" + str(model_name) + "': " + str(e))
+                self.logging.error("Could not load default detection model '" + model_name + "': " + str(e))
                 self.loaded = False
 
     def analyze(self, file_path, threshold=-1, return_image=True):
