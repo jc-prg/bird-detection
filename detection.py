@@ -4,6 +4,7 @@ import numpy as np
 import cv2
 import glob
 import logging
+import os
 
 # !!! to be removed, set via initial command ...
 dir_check_images = "train/check"
@@ -111,14 +112,18 @@ class DetectionModel:
             self.loaded = False
 
         elif ".pt" in model_name:
-            try:
-                self.logging.info("Load custom model '" + model_name + "' ...")
-                self.model = torch.hub.load(self.repro_default, 'custom', path=model_name, force_reload=True)
-                self.loaded = True
-                self.logging.info("OK.")
-            except Exception as e:
-                self.logging.error("Could not load default detection model '" + model_name + "': " + str(e))
+            if not os.path.isfile(model_name):
+                self.logging.error("Custom model '" + model_name + "' not found in path.")
                 self.loaded = False
+            else:
+                try:
+                    self.logging.info("Load custom model '" + model_name + "' ...")
+                    self.model = torch.hub.load(self.repro_default, 'custom', path=model_name, force_reload=True)
+                    self.loaded = True
+                    self.logging.info("OK.")
+                except Exception as e:
+                    self.logging.error("Could not load default detection model '" + model_name + "': " + str(e))
+                    self.loaded = False
 
         elif model_name == "" or "yolov5" in model_name:
             try:
