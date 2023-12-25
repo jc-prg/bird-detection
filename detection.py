@@ -127,11 +127,11 @@ class DetectionModel:
 
         elif model_name == "" or "yolov5" in model_name:
             try:
-                selected_name = self.repro_default
+                selected_model = self.repro_default_model
                 if model_name != "":
-                    selected_name = model_name
+                    selected_model = model_name
                 self.logging.info("Load default model ...")
-                self.model = torch.hub.load(selected_name, self.repro_default_model)
+                self.model = torch.hub.load(self.repro_default, selected_model)
                 self.loaded = True
             except Exception as e:
                 self.logging.error("Could not load default detection model '" + self.repro_default + "': " + str(e))
