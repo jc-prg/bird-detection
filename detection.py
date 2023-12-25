@@ -21,7 +21,7 @@ class ImageHandling:
 
     def load(self, file_path):
         """load file from given path"""
-        self.logging.debug("Load image file: " +file_path)
+        self.logging.debug("Load image file: " + file_path)
         return cv2.imread(file_path)
 
     def show(self, file_path, img):
@@ -88,6 +88,7 @@ class DetectionModel:
 
     def __init__(self, model_name=""):
         self.model = None
+        self.loaded = False
 
         self.repro_default = 'ultralytics/yolov5'
         self.repro_default_model = 'yolov5m'
@@ -107,15 +108,28 @@ class DetectionModel:
         """Load custom detection model or default model defined above"""
         if model_name == "":
             self.logging.info("Load default model: ")
-            self.model = torch.hub.load(self.repro_default, self.repro_default_model)
+            try:
+                self.model = torch.hub.load(self.repro_default, self.repro_default_model)
+                self.loaded = True
+            except Exception as e:
+                self.logging.error("Could not load default detection model '" + self.repro_default + "': " + str(e))
+                self.loaded = False
         else:
             self.logging.info("Load custom model '" + model_name + "':")
-            self.model = torch.hub.load(self.repro_default, 'custom', path=model_name, force_reload=True)
+            try:
+                self.model = torch.hub.load(self.repro_default, 'custom', path=model_name, force_reload=True)
+                self.loaded = True
+            except Exception as e:
+                self.logging.error("Could not load default detection model '" + model_name + "': " + str(e))
+                self.loaded = False
 
     def analyze(self, file_path, threshold=-1, return_image=True):
         """
         analyze image and return image including annotations as well as analyzed values as dict
         """
+        if not self.loaded:
+            return None, {"error": "Detection model not loaded"}
+
         if threshold == -1:
             threshold = self.default_threshold
 
