@@ -107,16 +107,16 @@ class DetectionModel:
     def load(self, model_name=""):
         """Load custom detection model or default model defined above"""
         if model_name == "":
-            self.logging.info("Load default model: ")
             try:
+                self.logging.info("Load default model: ")
                 self.model = torch.hub.load(self.repro_default, self.repro_default_model)
                 self.loaded = True
             except Exception as e:
                 self.logging.error("Could not load default detection model '" + self.repro_default + "': " + str(e))
                 self.loaded = False
         else:
-            self.logging.info("Load custom model '" + model_name + "':")
             try:
+                self.logging.info("Load custom model '" + model_name + "':")
                 self.model = torch.hub.load(self.repro_default, 'custom', path=model_name, force_reload=True)
                 self.loaded = True
             except Exception as e:
