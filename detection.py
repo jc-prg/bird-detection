@@ -114,6 +114,7 @@ class DetectionModel:
             except Exception as e:
                 self.logging.error("Could not load default detection model '" + self.repro_default + "': " + str(e))
                 self.loaded = False
+
         else:
             try:
                 self.logging.info("Load custom model '" + model_name + "':")
