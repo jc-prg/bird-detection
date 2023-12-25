@@ -1,0 +1,9 @@
+# train data sets
+path: ../train
+train: images
+val: validate
+
+# classes
+nc: 10
+names: ["bird","blaumeise","buntspecht","eichelhaeher","gruenspecht",
+        "kleiber","kohlmeise","rotkehlchen","sperling","weidenmeise"]

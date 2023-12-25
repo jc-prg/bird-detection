@@ -1,0 +1,13 @@
+/try-out
+
+/train/*
+
+/train-collection/*
+
+/train-preparation/*
+
+/yolov5
+
+/labelImg
+
+/*.pt
