@@ -52,16 +52,19 @@ class ImageHandling:
         self.logging.info("Found " + str(len(image_list)) + " files in directory " + file_path + "...")
         return image_list
 
-    def render_detection(self, img, detection_info, label_position=1, threshold=0):
+    def render_detection(self, img, detection_info, label_position=1, threshold=-1):
         """create boxes with title for each detected object"""
+        self.logging.debug("Render detection into images ...")
+
+        if 1 < threshold < 100:
+            threshold = threshold / 100
         font_scale = 0.5
         font_type = cv2.FONT_HERSHEY_SIMPLEX
         font_thickness = 1
-
-        self.logging.debug("Render detection into images ...")
         height, width = map(float, detection_info["image_size"])
+
         for detect in detection_info["detections"]:
-            if threshold == 0 or detect["confidence"] > threshold:
+            if threshold == -1 or detect["confidence"] > threshold:
                 color = self.colors[detect["class"]]
 
                 box_x = int(detect["coordinates"][0] * width)
@@ -87,7 +90,7 @@ class ImageHandling:
 
 class DetectionModel:
 
-    def __init__(self, model_name=""):
+    def __init__(self, model_name="", threshold=-1):
         self.model = None
         self.loaded = False
 
@@ -98,7 +101,12 @@ class DetectionModel:
         self.default_dir_check = "train/check"
         self.default_threshold = 0.4
 
-        self.threshold = self.default_threshold
+        if threshold != -1:
+            if 1 < threshold < 100:
+                threshold = threshold / 100
+            self.threshold = threshold
+        else:
+            self.threshold = self.default_threshold
 
         self.logging = logging.getLogger("detect")
         self.logging.setLevel = logging.INFO
@@ -150,7 +158,9 @@ class DetectionModel:
             return None, {"error": "Detection model not loaded"}
 
         if threshold == -1:
-            threshold = self.default_threshold
+            threshold = self.threshold
+        elif 1 < threshold < 100:
+            threshold = threshold / 100
 
         results = self.model(file_path)
         info = str(results).split("\n")
@@ -164,6 +174,7 @@ class DetectionModel:
             labels, cord_thres = results.xyxyn[0][:, -1].detach().cpu().numpy(), results.xyxyn[0][:, :-1].detach().cpu().numpy()
         else:
             labels, cord_thres = results.xyxyn[0][:, -1].numpy(), results.xyxyn[0][:, :-1].numpy()
+
         i = 0
         for label in labels:
             cord_thres[i] = list(cord_thres[i])
