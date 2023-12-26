@@ -64,7 +64,7 @@ class ImageHandling:
         height, width = map(float, detection_info["image_size"])
 
         for detect in detection_info["detections"]:
-            if threshold == -1 or detect["confidence"] > threshold:
+            if threshold == -1 or detect["confidence"] >= threshold:
                 color = self.colors[detect["class"]]
 
                 box_x = int(detect["coordinates"][0] * width)
