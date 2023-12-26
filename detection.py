@@ -85,6 +85,9 @@ class ImageHandling:
                 cv2.rectangle(img, (int(text_x), int(text_y)), (int(text_x) + label_width + 10, int(text_y + 20)), color, -1)
                 cv2.putText(img, label, (int(text_x + 5), int(text_y + 15)),
                             font_type, font_scale, (255, 255, 255), font_thickness)
+
+                cv2.putText(img, "Threshold: " + str(threshold), (20, height - 40), font_type, font_scale,
+                            (255, 255, 255), font_thickness)
         return img
 
 
