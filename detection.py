@@ -62,7 +62,7 @@ class ImageHandling:
         font_type = cv2.FONT_HERSHEY_SIMPLEX
         font_thickness = 1
         # height, width = map(float, detection_info["image_size"])
-        height, width, channels = image.shape
+        height, width, channels = img.shape
 
         for detect in detection_info["detections"]:
             if threshold == -1 or detect["confidence"] >= threshold:
