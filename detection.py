@@ -187,7 +187,9 @@ class DetectionModel:
             confidence = 0
             if len(cord_thres[i]) > 0:
                 confidence = cord_thres[i][4]
-            the_label = str(results.pandas().xyxy[0]["name"]).split("\n")[i].split("   ")[1]
+            label_information = str(results.pandas().xyxy[0]["name"]).split("\n")[i]
+            label_number = label_information.splite(" ")[0]
+            the_label = label_information[len(label_number):]
             the_label = the_label.lstrip()
             detect_info["detections"].append({
                 "class": int(label),
