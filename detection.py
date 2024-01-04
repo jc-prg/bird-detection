@@ -187,9 +187,11 @@ class DetectionModel:
             confidence = 0
             if len(cord_thres[i]) > 0:
                 confidence = cord_thres[i][4]
+            the_label = str(results.pandas().xyxy[0]["name"]).split("\n")[i].split("  ")[1].lstrip()
             detect_info["detections"].append({
                 "class": int(label),
-                "label": str(results.pandas().xyxy[0]["name"]).split("\n")[i].split("    ")[1],
+                "label": the_label,
+                "information": str(results.pandas().xyxy[0]["name"]).split("\n"),
                 "coordinates": list(map(float, cord_thres[i][0:-1])),
                 "confidence": float(cord_thres[i][-1:][0])
             })
