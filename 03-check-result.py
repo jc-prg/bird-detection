@@ -31,6 +31,7 @@ if __name__ == "__main__":
     custom_model = DetectionModel(custom_model_path)
     image = ImageHandling()
 
+    main_logging.info(str(default_model.get_labels()))
     main_logging.info(str(custom_model.get_labels()))
 
     count = 0
