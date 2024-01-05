@@ -102,6 +102,8 @@ class DetectionModel:
     def __init__(self, model_name="", threshold=-1):
         self.model = None
         self.loaded = False
+        self.name = model_name
+        self.labels = None
 
         self.repro_default = 'ultralytics/yolov5'
         self.repro_default_model = 'yolov5m'
@@ -136,6 +138,7 @@ class DetectionModel:
                 try:
                     self.logging.info("Load custom model '" + model_name + "' ...")
                     self.model = torch.hub.load(self.repro_default, 'custom', path=model_name, force_reload=True)
+                    self.labels = self.get_labels()
                     self.loaded = True
                     self.logging.info("OK.")
                 except Exception as e:
@@ -149,15 +152,39 @@ class DetectionModel:
                     selected_model = model_name
                 self.logging.info("Load default model ...")
                 self.model = torch.hub.load(self.repro_default, selected_model)
+                self.labels = self.get_labels()
                 self.loaded = True
+                self.logging.info("OK.")
             except Exception as e:
                 self.logging.error("Could not load default detection model '" + self.repro_default + "': " + str(e))
                 self.loaded = False
-                self.logging.info("OK.")
 
         else:
             self.logging.error("Model name doesn't match expected format: " + str(model_name))
             self.loaded = False
+
+    def get_labels(self):
+        """return parameters"""
+        if self.loaded:
+            # Check if the model has an attribute containing labels
+            if hasattr(self.model, 'labels'):
+                labels = self.model.labels
+                self.logging.debug("Labels:", labels)
+                return labels
+            elif hasattr(self.model, 'names'):
+                labels = self.model.names
+                self.logging.debug("Labels:", labels)
+                return labels
+            else:
+                try:
+                    with open(self.model.model[-1].yaml['names']) as f:
+                        labels = f.read().strip().split('\n')
+                    self.logging.debug("Labels:", labels)
+                    return labels
+                except Exception as e:
+                    self.logging.warning("Labels information not found. Error:", str(e))
+        else:
+            self.logging.warning("No model loaded yet.")
 
     def analyze(self, file_path, threshold=-1, return_image=True, render_detection=False):
         """
