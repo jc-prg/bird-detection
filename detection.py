@@ -62,7 +62,10 @@ class ImageHandling:
         font_type = cv2.FONT_HERSHEY_SIMPLEX
         font_thickness = 1
         # height, width = map(float, detection_info["image_size"])
-        height, width, channels = img.shape
+        if img is not None:
+           height, width, channels = img.shape
+        else:
+           return None
 
         for detect in detection_info["detections"]:
             if threshold == -1 or detect["confidence"] >= threshold:
@@ -208,7 +211,12 @@ class DetectionModel:
         if return_image:
             if render_detection:
                 img = np.squeeze(results.render(threshold))
-            img = cv2.cvtColor(np.array(img), cv2.COLOR_BGR2RGB)
+                logging.info(str(img.shape))
+                height, width, color = img.shape
+                if color == 3:
+                    img = cv2.cvtColor(np.array(img), cv2.COLOR_BGR2RGB)
+            else:
+                img = cv2.imread(file_path)
 
         return img, detect_info
 
