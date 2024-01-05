@@ -31,6 +31,8 @@ if __name__ == "__main__":
     custom_model = DetectionModel(custom_model_path)
     image = ImageHandling()
 
+    main_logging.info(str(custom_model.get_labels()))
+
     count = 0
     sel_images = []
     all_images = image.get_list(default_model.default_dir_test)

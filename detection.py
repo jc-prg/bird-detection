@@ -211,20 +211,19 @@ class DetectionModel:
         else:
             labels, cord_thres = results.xyxyn[0][:, -1].numpy(), results.xyxyn[0][:, :-1].numpy()
 
+        label_names = self.get_labels()
+
         i = 0
         for label in labels:
             cord_thres[i] = list(cord_thres[i])
             confidence = 0
             if len(cord_thres[i]) > 0:
                 confidence = cord_thres[i][4]
-            label_information = str(results.pandas().xyxy[0]["name"]).split("\n")[i]
-            label_number = label_information.split(" ")[0]
-            the_label = label_information[len(label_number):]
-            the_label = the_label.lstrip()
+
+            label_name = label_names[label]
             detect_info["detections"].append({
                 "class": int(label),
-                "label": the_label,
-                "information": str(results.pandas().xyxy[0]["name"]).split("\n"),
+                "label": label_name,
                 "coordinates": list(map(float, cord_thres[i][0:-1])),
                 "confidence": float(cord_thres[i][-1:][0])
             })
@@ -248,8 +247,10 @@ class DetectionModel:
         return img, detect_info
 
     def analyze_file(self):
+        self.logging.info("'analyze_file' not implemented yet")
         pass
 
     def analyze_image(self):
+        self.logging.info("'analyze_image' not implemented yet")
         pass
 
