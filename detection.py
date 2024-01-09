@@ -237,7 +237,7 @@ class DetectionModel:
         if return_image:
             if render_detection:
                 img = np.squeeze(results.render(threshold))
-                logging.info(str(img.shape))
+                self.logging.info(str(img.shape))
                 height, width, color = img.shape
                 if color == 3:
                     img = cv2.cvtColor(np.array(img), cv2.COLOR_BGR2RGB)
