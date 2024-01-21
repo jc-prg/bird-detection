@@ -193,7 +193,7 @@ class DetectionModel:
         if not self.loaded:
             return None, {"error": "Detection model not loaded"}
 
-        if not os.path.exists(file_path)
+        if not os.path.exists(file_path):
             return None, {"error": "File doesn't exist: " + file_path}
 
         if threshold == -1:
