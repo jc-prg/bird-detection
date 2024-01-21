@@ -47,36 +47,46 @@ nvidia-smi
    - remove those images that doesn't fit your requirements and are too small
    
 
-2. _Label the objects using labelImg_
+2. Create or adapt classes
+
+   * for labelImg in `./labelImg/train-preparation/labels/classes.txt`
+
+      ```commandline
+      list
+      of
+      your
+      names
+      ```
+
+   * for YOLOv5 in  `yolov5/dataset.yml`
+
+      ```yaml
+      # train data sets
+      path: ../train
+      train: images
+      val: validate
+   
+      # classes
+      nc: 4 # number of names
+      names: ["list", "of", "your", "names"] # have to be the same such as in train-preparation/labels/classes.txt
+      ```
+
+3. _Label the objects using labelImg_
    - change values for default class definition if required: [labelImg/data/predefined_classes.txt](labelImg/data/predefined_classes.txt)
    - select sub-folder [train-preparation/images](train-preparation/images) via "Open Dir"
    - select sub-folder [train-preparation/labels](train-preparation/labels) via "Change Save Dir"
-```commandline
-cd labelImg
-python3 ./labelImg.py
-```
-
-
-3. Create or adapt yolov5/dataset.yml
-
-```yaml
-# train data sets
-path: ../train
-train: images
-val: validate
-
-# classes
-nc: 10 # number of names
-names: ["list", "of", "your", "names"] # have to be the same such as in train-preparation/labels/classes.txt
-```
+   ```commandline
+   cd labelImg
+   python3 ./labelImg.py
+   ```
 
 
 4. Create trainings data
 
-Copy files to train folder and split into training and validation data.
-```commandline
-python3 01-prepare-images.py
-```
+   * Copy files to `train` folder and split into training and validation data.
+      ```commandline
+      python3 01-prepare-images.py
+      ```
 
 ## Train model
 
