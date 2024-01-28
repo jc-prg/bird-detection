@@ -1,4 +1,6 @@
 import os.path
+
+import numpy
 import torch
 import numpy as np
 import cv2
@@ -12,6 +14,9 @@ all_files = {}
 
 
 class ImageHandling:
+    """
+    Class to handle and modify images, supporting class for the class DetectionModel
+    """
 
     def __init__(self):
         self.supported_image_types = ["jpg", "jpeg", "png", "bmp", "gif"]
@@ -98,8 +103,18 @@ class ImageHandling:
 
 
 class DetectionModel:
+    """
+    Class to load YOLOv5 detection model and analyze images
+    """
 
     def __init__(self, model_name="", threshold=-1):
+        """
+        Constructor for this class
+
+        Parameters:
+            model_name (str): model to be loaded (full path to *.pt file if custom model or yolov5 model name)
+            threshold (float): detection threshold to be used, if not set or -1, the default value will be used (0.4)
+        """
         self.model = None
         self.loaded = False
         self.name = model_name
@@ -125,7 +140,12 @@ class DetectionModel:
         self.load(model_name)
 
     def load(self, model_name=""):
-        """Load custom detection model or default model defined above"""
+        """
+        Load custom detection model, default model defined above or other yolov5\* model
+
+        Parameters:
+            model_name (str): full path to \*.pt file if custom model or yolov5\* model name
+        """
         if model_name is None:
             self.logging.error("No model given to be loaded!")
             self.loaded = False
@@ -164,7 +184,12 @@ class DetectionModel:
             self.loaded = False
 
     def get_labels(self):
-        """return parameters"""
+        """
+        Get a list of labels defined in the model
+
+        Returns:
+            list: list of labels in the model
+        """
         if self.loaded:
             # Check if the model has an attribute containing labels
             if hasattr(self.model, 'labels'):
@@ -189,12 +214,21 @@ class DetectionModel:
     def analyze(self, file_path, threshold=-1, return_image=True, render_detection=False):
         """
         analyze image and return image including annotations as well as analyzed values as dict
+
+        Parameters:
+            file_path (str): path of the file to be analyzed
+            threshold (float): threshold in %, if threshold=-1 use default threshold
+            return_image (bool): return images
+            render_detection (bool): visualize detections in the returned image
+        Returns:
+            numpy.ndarray, list of dict: image incl. detections if render_detection, array of detections
         """
+        empty_image = None
         if not self.loaded:
-            return None, {"error": "Detection model not loaded"}
+            return empty_image, [{"error": "Detection model not loaded"}]
 
         if not os.path.exists(file_path):
-            return None, {"error": "File doesn't exist: " + file_path}
+            return empty_image, [{"error": "File doesn't exist: " + file_path}]
 
         if threshold == -1:
             threshold = self.threshold
@@ -219,18 +253,20 @@ class DetectionModel:
         i = 0
         for label in labels:
             cord_thres[i] = list(cord_thres[i])
-            confidence = 0
-            if len(cord_thres[i]) > 0:
-                confidence = cord_thres[i][4]
+            confidence = round(float(cord_thres[i][-1:][0]), 6)
+            coordinates = list(map(float, cord_thres[i][0:-1]))
+            coordinates = [round(num, 6) for num in coordinates]
 
-            label_name = label_names[label]
-            detect_info["detections"].append({
-                "class": int(label),
-                "label": label_name,
-                "coordinates": list(map(float, cord_thres[i][0:-1])),
-                "confidence": float(cord_thres[i][-1:][0])
-            })
-            i += 1
+            if confidence >= threshold:
+                label_name = label_names[label]
+                detect_info["detections"].append({
+                    "class": int(label),
+                    "label": label_name,
+                    "coordinates": coordinates,
+                    "confidence": confidence,
+                    "threshold": threshold
+                })
+                i += 1
 
         self.logging.debug(detect_info)
         # print(results)
