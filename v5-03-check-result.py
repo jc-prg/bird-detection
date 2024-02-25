@@ -8,31 +8,18 @@ import codecs
 import logging
 
 
-from detection_v8 import ImageHandling, DetectionModel
+from detection import ImageHandling, DetectionModel
 
 log_level = logging.INFO
 number_test_images = 20
-custom_model_path = "custom_models/birds_yolov8_test.pt"
-custom_model_path = "custom_models/birdhouse_birds_v04.pt"
-dir_test_images = "train/validate/images"
+custom_model_path = "custom_models/birdhouse_birds_v03.pt"
+dir_test_images = "train/validate"
 dir_check_images = "train/check"
 all_files = {}
 
 
 if __name__ == "__main__":
 
-    #print("Test ...")
-    #image = ImageHandling()
-    #all_images = image.get_list(dir_test_images)
-    #random.shuffle(all_images)
-    #print(str(all_images[0]))
-
-    #model = DetectionModel(custom_model_path)
-    #model.test_yolo(custom_model_path, all_images[0])
-    #exit()
-
-
-    #---------------------------------------------------
     # initialize logging
     logging.basicConfig(level=log_level, format='%(levelname)-8s %(name)-10s | %(message)s')
     main_logging = logging.getLogger("main")
@@ -49,7 +36,7 @@ if __name__ == "__main__":
 
     count = 0
     sel_images = []
-    all_images = image.get_list(dir_test_images)
+    all_images = image.get_list(default_model.default_dir_test)
     random.shuffle(all_images)
 
     main_logging.info("Try with DEFAULT model ...")

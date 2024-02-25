@@ -5,7 +5,8 @@ workers=8
 image_size=320
 batch_size=16
 epochs=150
+epochs=75
 
 cd yolov5/
 #/bin/python3 train.py --img $image_size --batch $batch_size --epochs $epochs --data dataset.yml --weights $use_model --workers $workers
-/bin/python3 train.py --img $image_size --batch $batch_size --epochs $epochs --data ../00-train-dataset.yml --weights $use_model --workers $workers
+/bin/python3 train.py --img $image_size --batch $batch_size --epochs $epochs --data ../02-train-dataset.yml --weights $use_model --workers $workers --cache ram 

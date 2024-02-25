@@ -18,7 +18,7 @@ directories = {
     "yolo": "yolov5"
 }
 dataset_yml = "02-train-dataset.yml"
-version = "v8"  # v8 or v5
+version = "v5"  # v8 or v5
 
 
 def read(filename):

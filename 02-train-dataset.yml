@@ -1,9 +1,22 @@
-# train data sets
-path: ../train
+path: /media/Daten/projects/test/bird-detection/train
 train: images
 val: validate
+test:
 
-# classes
-nc: 10
-names: ["bird","blaumeise","buntspecht","eichelhaeher","gruenspecht",
-        "kleiber","kohlmeise","rotkehlchen","sperling","weidenmeise"]
+nc: 14
+names: 
+  - bird
+  - blaumeise
+  - buntspecht
+  - eichelhaeher
+  - gruenspechte
+  - kleiber
+  - kohlmeise
+  - rotkehlchen
+  - sperling
+  - weidenmeise
+  - schwanzmeise
+  - elster
+  - taube
+  - kraehe
+

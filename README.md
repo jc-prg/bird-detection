@@ -1,24 +1,23 @@
-# Create YOLOv5/PyTorch detection model
+# Create YOLOv8 detection model
 
 This is an easy way to create a self-trained detection model.
 
-## Source and HowTo
-
-Thanks for this great tutorial:
-
-* https://github.com/nicknochnack/YOLO-Drowsiness-Detection/blob/main/Drowsiness%20Detection%20Tutorial.ipynb
-* https://www.youtube.com/watch?v=tFNJGim3FXw
-
 ## Install preconditions
+
+```commandline
+sudo apt-get install python3-opencv
+pip install ultralytics
+
+git clone https://github.com/tzutalin/labelImg
+```
+
+If you want to use the former version with YOLOv5 install it:
 
 ```commandline
 pip install torch torchvision torchaudio
 
 git clone https://github.com/ultralytics/yolov5
 cd yolov5 & pip install -r requirements.txt
-
-cd ..
-git clone https://github.com/tzutalin/labelImg
 ```
 
 ## Check if GPU tools installed
@@ -58,28 +57,15 @@ nvidia-smi
       names
       ```
 
-   * for YOLOv5 in  `yolov5/dataset.yml`
-
-      ```yaml
-      # train data sets
-      path: ../train
-      train: images
-      val: validate
-   
-      # classes
-      nc: 4 # number of names
-      names: ["list", "of", "your", "names"] # have to be the same such as in train-preparation/labels/classes.txt
-      ```
-
 3. _Label the objects using labelImg_
    - change values for default class definition if required: [labelImg/data/predefined_classes.txt](labelImg/data/predefined_classes.txt)
    - select sub-folder [train-preparation/images](train-preparation/images) via "Open Dir"
    - select sub-folder [train-preparation/labels](train-preparation/labels) via "Change Save Dir"
+
    ```commandline
    cd labelImg
    python3 ./labelImg.py
    ```
-
 
 4. Create trainings data
 
@@ -87,21 +73,32 @@ nvidia-smi
       ```commandline
       python3 01-prepare-images.py
       ```
+     
+   * This command will (re)create data in two folders:
+     * [train-check](train-check) contains data sorted by label. If something isn't as expected go back to 3. and 
+       adapt your source data
+     * [train](train) contains the data for the training.
 
 ## Train model
 
-Check, if required modify, and start the following script:
+1. Check the settings in the script [02-train-images.py](./02-train-images.py), if required modify, and start:
 
-```commandline
-./02-train-images
-```
+    ```commandline
+    ./02-train-images.py
+    ```
+
+2. The training will create a directory 'runs/detect' with numbered subdirectories per run. In the
+   lastest directory you'll find the trained model in the subdirectory 'weights'. Copy the file 'best.pt' to
+   the directory [custom_models](custom_models)
 
 ## Validate results
 
-Try detection with created model based on some test files.
+1. Adapt the settings in the file [03-check-results.py](./03-check-results.py) to the name of your freshly trained model.
 
-```commandline
-python3 03-check-results
-```
+2. Try detection with created model based on some test files.
 
-The results will be stored in the directory [train/check](train/check).
+    ```commandline
+    ./03-check-results.py
+    ```
+
+3. The results will be stored in the directory [train/check](train/check).
