@@ -66,7 +66,7 @@ class ImageHandling:
         """
         create boxes with title for each detected object
 
-        Parameters:
+        Args:
              img (numpy.ndarray): image data
              detection_info (dict): detection infos
              label_position (int): position of label (values: 1..4)
@@ -135,7 +135,7 @@ class DetectionModel:
         """
         Constructor for this class
 
-        Parameters:
+        Args:
             model_name (str): model to be loaded (full path to *.pt file if custom model or yolov5 model name)
             threshold (float): detection threshold to be used, if not set or -1, the default value will be used (0.4)
         """
@@ -188,7 +188,7 @@ class DetectionModel:
         """
         Load custom detection model, default model defined above or other yolov5\* model
 
-        Parameters:
+        Args:
             model_name (str): full path to \*.pt file if custom model or yolov5\* model name
         """
         if model_name is None:
@@ -255,7 +255,7 @@ class DetectionModel:
         """
         analyze image and return image including annotations as well as analyzed values as dict
 
-        Parameters:
+        Args:
             file_path (str): path of the file to be analyzed
             threshold (float): threshold in %, if threshold=-1 use default threshold
             return_image (bool): return images
@@ -320,7 +320,7 @@ class DetectionModel:
         """
         analyze image and return image including annotations as well as analyzed values as dict
 
-        Parameters:
+        Args:
             file_path (str): path of the file to be analyzed
             threshold (float): threshold in %, if threshold=-1 use default threshold
             return_image (bool): return images
