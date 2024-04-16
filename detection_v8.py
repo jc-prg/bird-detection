@@ -131,7 +131,7 @@ class DetectionModel:
     Class to load YOLOv5 detection model and analyze images
     """
 
-    def __init__(self, model_name="", threshold=-1):
+    def __init__(self, model_name="", threshold=-1, img_size=None):
         """
         Constructor for this class
 
@@ -144,6 +144,7 @@ class DetectionModel:
         self.name = model_name
         self.labels = None
         self.image = ImageHandling()
+        self.img_size = img_size
 
         self.default_models = ["yolov8n", "yolov8s", "yolov8m", "yolov8l", "yolov8x"]
         self.default_model = 'yolov8m'
@@ -276,8 +277,10 @@ class DetectionModel:
             threshold = threshold / 100
 
         image = cv2.imread(file_path)
-        #results = self.model.predict(source=image)
-        results = self.model.predict(source=file_path)
+        if self.img_size:
+            results = self.model.predict(source=file_path, conf=threshold, imgsz=self.img_size)
+        else:
+            results = self.model.predict(source=file_path, conf=threshold)
 
         detect_summary = {}
         detect_info = {
