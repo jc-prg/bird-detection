@@ -166,6 +166,15 @@ class DetectionModel:
         self.load(model_name)
 
     def test_yolo(self, model_name="", image=""):
+        """
+        Tests a YOLO model by loading it, processing a given image, and printing the prediction results
+        including detected objects' details like class type, bounding box coordinates, and confidence
+        score.
+
+        Args:
+            model_name (str): The path or name of the YOLO model to load.
+            image (str): The file path to the image on which predictions will be made.
+        """
         print("Load model " + model_name)
         model = ultralytics.YOLO(model_name)
         print("Loaded: " + str(model.names))
@@ -254,7 +263,21 @@ class DetectionModel:
 
     def analyze(self, file_path, threshold=-1, return_image=True, render_detection=False):
         """
-        analyze image and return image including annotations as well as analyzed values as dict
+        analyze image and return image including annotations as well as analyzed values as dict - using YOLOv8
+
+        Args:
+            file_path (str): path of the file to be analyzed
+            threshold (float): threshold in %, if threshold=-1 use default threshold
+            return_image (bool): return images
+            render_detection (bool): visualize detections in the returned image
+        Returns:
+            numpy.ndarray, list of dict: image incl. detections if render_detection, array of detections
+        """
+        return self.analyze_v8(file_path, threshold, return_image, render_detection)
+
+    def analyze_v8(self, file_path, threshold=-1, return_image=True, render_detection=False):
+        """
+        analyze image and return image including annotations as well as analyzed values as dict - using YOLOv8
 
         Args:
             file_path (str): path of the file to be analyzed
@@ -321,7 +344,7 @@ class DetectionModel:
 
     def analyze_v5(self, file_path, threshold=-1, return_image=True, render_detection=False):
         """
-        analyze image and return image including annotations as well as analyzed values as dict
+        analyze image and return image including annotations as well as analyzed values as dict - using YOLOv5
 
         Args:
             file_path (str): path of the file to be analyzed
