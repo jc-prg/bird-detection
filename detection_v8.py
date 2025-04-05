@@ -135,7 +135,7 @@ class DetectionModel:
         """
         Constructor for this class
 
-        Args:
+        Parameters:
             model_name (str): model to be loaded (full path to *.pt file if custom model or yolov5 model name)
             threshold (float): detection threshold to be used, if not set or -1, the default value will be used (0.4)
         """
@@ -145,7 +145,7 @@ class DetectionModel:
         self.labels = None
         self.image = ImageHandling()
 
-        self.default_models = ["yolov8n", "yolov8s", "yolov8m", "yolov8l", "yolo11n", "yolo11s", "yolo11m", "yolo11l"]
+        self.default_models = ["yolov8n", "yolov8s", "yolov8m", "yolov8l", "yolov8x"]
         self.default_model = 'yolov8m'
         self.default_dir = "train"
         self.default_dir_test = "train/validate"
@@ -165,16 +165,6 @@ class DetectionModel:
         self.load(model_name)
 
     def test_yolo(self, model_name="", image=""):
-        """
-        Tests the YOLO model for object detection on a given image. This function loads the YOLO
-        model, processes the input image, performs predictions, and provides detailed output
-        information about the objects detected, including their coordinates, confidence levels,
-        and class names.
-
-        Args:
-            model_name (str): The name of the YOLO model to load.
-            image (str): Path to the image file to be processed.
-        """
         print("Load model " + model_name)
         model = ultralytics.YOLO(model_name)
         print("Loaded: " + str(model.names))
@@ -198,7 +188,7 @@ class DetectionModel:
         """
         Load custom detection model, default model defined above or other yolov5\* model
 
-        Args:
+        Parameters:
             model_name (str): full path to \*.pt file if custom model or yolov5\* model name
         """
         if model_name is None:
@@ -265,7 +255,7 @@ class DetectionModel:
         """
         analyze image and return image including annotations as well as analyzed values as dict
 
-        Args:
+        Parameters:
             file_path (str): path of the file to be analyzed
             threshold (float): threshold in %, if threshold=-1 use default threshold
             return_image (bool): return images
@@ -330,7 +320,7 @@ class DetectionModel:
         """
         analyze image and return image including annotations as well as analyzed values as dict
 
-        Args:
+        Parameters:
             file_path (str): path of the file to be analyzed
             threshold (float): threshold in %, if threshold=-1 use default threshold
             return_image (bool): return images
