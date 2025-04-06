@@ -37,4 +37,5 @@ if __name__ == "__main__":
       epochs=int(get_env("TRAIN_EPOCHS")),
       batch=int(get_env("TRAIN_BATCH_SIZE")),
       name=get_env("TRAIN_TARGET_MODEL"),
+      device=get_env("TRAIN_DEVICE"),
       )
