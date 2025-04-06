@@ -23,9 +23,10 @@ class ImageHandling:
     Class to handle and modify images, supporting class for the class DetectionModel
     """
 
-    def __init__(self):
+    def __init__(self, model_name="none"):
         self.supported_image_types = ["jpg", "jpeg", "png", "bmp", "gif"]
         self.colors = np.random.uniform(0, 155, size=(100, 3))
+        self.model_name = model_name
 
         self.logging = logging.getLogger("image")
         self.logging.setLevel = logging.INFO
@@ -120,6 +121,10 @@ class ImageHandling:
                 cv2.putText(img, threshold_info, (int(20), int(height - 40)), font_type, font_scale,
                             (255, 255, 255), font_thickness)
 
+                threshold_info = "Model: " + str(self.model_name)
+                cv2.putText(img, threshold_info, (int(20), int(height - 60)), font_type, font_scale,
+                            (255, 255, 255), font_thickness)
+
                 if test:
                     cv2.putText(img, position_info, (int(20), int(position_info_y)), font_type, font_scale,
                                 (255, 255, 255), font_thickness)
@@ -142,8 +147,9 @@ class DetectionModel:
         self.model = None
         self.loaded = False
         self.name = model_name
+        self.image = ImageHandling(model_name)
+        #self.image.model_name = selected_model.split("/")[-1].split(".")[0]
         self.labels = None
-        self.image = ImageHandling()
         self.img_size = img_size
 
         self.default_models = ["yolov8n", "yolov8s", "yolov8m", "yolov8l", "yolov8x"]
@@ -196,10 +202,10 @@ class DetectionModel:
 
     def load(self, model_name=""):
         """
-        Load custom detection model, default model defined above or other yolov5\* model
+        Load custom detection model, default model defined above or other yolov5/yolov8/yolo11 model
 
         Args:
-            model_name (str): full path to \*.pt file if custom model or yolov5\* model name
+            model_name (str): full path to \*.pt file if custom model or yolov5/yolov8/yolo11 model name
         """
         if model_name is None:
             self.logging.error("No model given to be loaded!")
@@ -301,9 +307,9 @@ class DetectionModel:
 
         image = cv2.imread(file_path)
         if self.img_size:
-            results = self.model.predict(source=file_path, conf=threshold, imgsz=self.img_size)
+            results = self.model.predict(file_path, conf=threshold, imgsz=self.img_size)
         else:
-            results = self.model.predict(source=file_path, conf=threshold)
+            results = self.model.predict(file_path, conf=threshold)
 
         detect_summary = {}
         detect_info = {
