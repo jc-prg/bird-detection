@@ -14,6 +14,7 @@ log_level = logging.INFO
 number_test_images = 20
 custom_model_path = "custom_models/birds_yolov8_test.pt"
 custom_model_path = "custom_models/birdhouse_birds_v04.pt"
+custom_model_path = "custom_models/birdhouse_birds_v04.pt"
 dir_test_images = "train/validate/images"
 dir_check_images = "train/check"
 all_files = {}
