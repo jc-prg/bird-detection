@@ -26,7 +26,7 @@ class ImageHandling:
     def __init__(self, model_name="none"):
         self.supported_image_types = ["jpg", "jpeg", "png", "bmp", "gif"]
         self.colors = np.random.uniform(0, 155, size=(100, 3))
-        self.model_name = model_name
+        self.model_name = model_name.split("/")[-1].split(".")[0]
 
         self.logging = logging.getLogger("image")
         self.logging.setLevel = logging.INFO
