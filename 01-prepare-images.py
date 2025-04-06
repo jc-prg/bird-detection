@@ -5,20 +5,47 @@ import glob
 import shutil
 import random
 import logging
+from dotenv import load_dotenv
 
 
-directories = {
-    "train-check": "train-check",
-    "train": "train",
-    "source": "train-preparation",
-    "labels": "labels",
-    "images": "images",
-    "images_v8": "train",
-    "validate": "validate",
-    "yolo": "yolov5"
-}
-dataset_yml = "02-train-dataset.yml"
-version = "v8"  # v8 or v5 or 11
+directories = {}
+dataset_yml = "None"
+version = "None"
+
+
+def get_env(var_name):
+   """
+   get value from .env-file if exists
+
+   Args:
+       var_name (str): key in .env file
+   Returns:
+       Any: value from .env file
+   """
+   try:
+      value = os.environ.get(var_name)
+   except Exception as e:
+      value = None
+   return value
+
+
+def set_vars():
+    """
+    set initial vars incl. values from .env file
+    """
+    global directories, dataset_yml, version
+
+    dataset_yml = get_env("TRAIN_DATA_SET")
+    version = get_env("TRAIN_YOLO_VERSION")
+    directories = {
+        "train-check": "train-check",
+        "train": "train",
+        "source": "train-preparation",
+        "labels": "labels",
+        "images": "images",
+        "images_v8": "train",
+        "validate": "validate",
+    }
 
 
 def read(filename):
@@ -55,6 +82,8 @@ def read_file_data():
     read all file data into a dict and return
     :return dict:
     """
+    global directories
+
     file_data = {}
     dir_source = os.path.join(directories["source"], directories["images"])
     dir_labels = os.path.join(directories["source"], directories["labels"])
@@ -145,6 +174,8 @@ def prepare_images_check(data, test_ratio=0.2):
     :param test_ratio:
     :return:
     """
+    global directories
+
     dirs = {
         "destination": os.path.join(directories["train-check"], directories["images"]),
         "validate": os.path.join(directories["train-check"], directories["validate"]),
@@ -200,7 +231,8 @@ def prepare_images_v2(data, test_ratio=0.2):
     :param test_ratio:
     :return:
     """
-    global version
+    global version, directories, dataset_yml
+
     dirs = {
         "destination": os.path.join(directories["train"], directories["images"]),
         "destination_v8_img": os.path.join(directories["train"], directories["images"], "images"),
@@ -239,7 +271,7 @@ def prepare_images_v2(data, test_ratio=0.2):
             if not os.path.exists(dir_validate):
                 os.makedirs(dir_validate)
 
-        elif version == "v8":
+        elif version == "v8" or version == "v11":
             dir_destination_v8_img = dirs["destination_v8_img"]
             dir_destination_v8_lab = dirs["destination_v8_lab"]
             if not os.path.exists(dir_destination_v8_img):
@@ -261,6 +293,7 @@ def prepare_images_v2(data, test_ratio=0.2):
             # print(filename)
             entry = data["file_data"][filename]
             source_file = entry["file-image"]
+            validate_file = None
             if version == "v5":
                 destination_file = os.path.join(dir_destination, entry["file-image"].split("/")[-1])
                 validate_file = os.path.join(dir_validate, entry["file-image"].split("/")[-1])
@@ -270,7 +303,7 @@ def prepare_images_v2(data, test_ratio=0.2):
                 destination_file_label = os.path.join(dirs["labels"], entry["file-label"].split("/")[-1])
                 shutil.copy(source_file_label, destination_file_label)
 
-            elif version == "v8":
+            elif version == "v8" or version == "v11":
                 destination_file = os.path.join(dir_destination_v8_img, entry["file-image"].split("/")[-1])
                 validate_file = os.path.join(dir_validate_v8_img, entry["file-image"].split("/")[-1])
 
@@ -279,8 +312,11 @@ def prepare_images_v2(data, test_ratio=0.2):
                 destination_file_label2 = os.path.join(dir_validate_v8_lab, entry["file-label"].split("/")[-1])
                 shutil.copy(source_file_label, destination_file_label1)
                 shutil.copy(source_file_label, destination_file_label2)
+            else:
+                print("ERROR: version not supported: " + str(version))
+                return
 
-            if i < test_ratio * len(image_files):
+            if i < test_ratio * len(image_files) and validate_file is not None:
                 shutil.copy(source_file, validate_file)
             else:
                 shutil.copy(source_file, destination_file)
@@ -304,7 +340,7 @@ def prepare_images_v2(data, test_ratio=0.2):
         if class_name != "":
             if version == "v5":
                 yml_data += "  " + str(i) + ": " + class_name + "\n"
-            elif version == "v8":
+            elif version == "v8" or version == "v11":
                 yml_data += "  - " + class_name + "\n"
     yml_data += "\n"
 
@@ -316,6 +352,8 @@ def prepare_labels():
     copy label files to destination directory defined in global var directories["labels"]
     :return:
     """
+    global directories
+
     source = os.path.join(directories["source"], directories["labels"])
     goal = os.path.join(directories["train"], directories["labels"])
 
@@ -339,6 +377,8 @@ def prepare_images(test_ratio=0.2):
     :param test_ratio: amount of test files, default = 20%
     :return:
     """
+    global directories
+
     source = os.path.join(directories["source"], directories["images"])
     goal = os.path.join(directories["train"], directories["images"])
     validate = os.path.join(directories["train"], directories["validate"])
@@ -387,9 +427,15 @@ def validate_with_images(count):
     pass
 
 
-analyze_data = read_file_data()
-prepare_images_check(analyze_data)
-prepare_images_v2(analyze_data)
+if __name__ == "__main__":
 
-#prepare_labels()
-#prepare_images()
+    # Load configuration
+    path = os.path.join(os.path.dirname(__file__), ".env")
+    load_dotenv(path)
+    set_vars()
+
+    # Prepare training data
+    analyze_data = read_file_data()
+    prepare_images_check(analyze_data)
+    prepare_images_v2(analyze_data)
+

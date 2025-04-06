@@ -1,4 +1,4 @@
-# Create YOLOv8 detection model
+# Create YOLO detection model (v5, v8, v11)
 
 This is an easy way to create a self-trained detection model.
 
@@ -37,6 +37,13 @@ sudo modprobe nvidia_uvm
 nvcc -V
 nvidia-smi
 ```
+
+## Create configuration
+
+* _Create YOLO configuration_
+  - copy [sample.env](sample.env) to .env
+  - edit the .env-file and change the default configuration to your needs
+
 
 ## Prepare images
 
