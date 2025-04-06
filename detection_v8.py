@@ -23,9 +23,10 @@ class ImageHandling:
     Class to handle and modify images, supporting class for the class DetectionModel
     """
 
-    def __init__(self):
+    def __init__(self, model_name="none"):
         self.supported_image_types = ["jpg", "jpeg", "png", "bmp", "gif"]
         self.colors = np.random.uniform(0, 155, size=(100, 3))
+        self.model_name = model_name
 
         self.logging = logging.getLogger("image")
         self.logging.setLevel = logging.INFO
@@ -120,6 +121,10 @@ class ImageHandling:
                 cv2.putText(img, threshold_info, (int(20), int(height - 40)), font_type, font_scale,
                             (255, 255, 255), font_thickness)
 
+                threshold_info = "Model: " + str(self.model_name)
+                cv2.putText(img, threshold_info, (int(20), int(height - 60)), font_type, font_scale,
+                            (255, 255, 255), font_thickness)
+
                 if test:
                     cv2.putText(img, position_info, (int(20), int(position_info_y)), font_type, font_scale,
                                 (255, 255, 255), font_thickness)
@@ -131,19 +136,21 @@ class DetectionModel:
     Class to load YOLOv5 detection model and analyze images
     """
 
-    def __init__(self, model_name="", threshold=-1):
+    def __init__(self, model_name="", threshold=-1, img_size=None):
         """
         Constructor for this class
 
-        Parameters:
+        Args:
             model_name (str): model to be loaded (full path to *.pt file if custom model or yolov5 model name)
             threshold (float): detection threshold to be used, if not set or -1, the default value will be used (0.4)
         """
         self.model = None
         self.loaded = False
         self.name = model_name
+        self.image = ImageHandling(model_name)
+        #self.image.model_name = selected_model.split("/")[-1].split(".")[0]
         self.labels = None
-        self.image = ImageHandling()
+        self.img_size = img_size
 
         self.default_models = ["yolov8n", "yolov8s", "yolov8m", "yolov8l", "yolov8x"]
         self.default_model = 'yolov8m'
@@ -165,6 +172,15 @@ class DetectionModel:
         self.load(model_name)
 
     def test_yolo(self, model_name="", image=""):
+        """
+        Tests a YOLO model by loading it, processing a given image, and printing the prediction results
+        including detected objects' details like class type, bounding box coordinates, and confidence
+        score.
+
+        Args:
+            model_name (str): The path or name of the YOLO model to load.
+            image (str): The file path to the image on which predictions will be made.
+        """
         print("Load model " + model_name)
         model = ultralytics.YOLO(model_name)
         print("Loaded: " + str(model.names))
@@ -186,10 +202,10 @@ class DetectionModel:
 
     def load(self, model_name=""):
         """
-        Load custom detection model, default model defined above or other yolov5\* model
+        Load custom detection model, default model defined above or other yolov5/yolov8/yolo11 model
 
-        Parameters:
-            model_name (str): full path to \*.pt file if custom model or yolov5\* model name
+        Args:
+            model_name (str): full path to \*.pt file if custom model or yolov5/yolov8/yolo11 model name
         """
         if model_name is None:
             self.logging.error("No model given to be loaded!")
@@ -276,8 +292,10 @@ class DetectionModel:
             threshold = threshold / 100
 
         image = cv2.imread(file_path)
-        #results = self.model.predict(source=image)
-        results = self.model.predict(source=file_path)
+        if self.img_size:
+            results = self.model.predict(source=file_path, conf=threshold, imgsz=self.img_size)
+        else:
+            results = self.model.predict(source=file_path, conf=threshold)
 
         detect_summary = {}
         detect_info = {
@@ -318,9 +336,9 @@ class DetectionModel:
 
     def analyze_v5(self, file_path, threshold=-1, return_image=True, render_detection=False):
         """
-        analyze image and return image including annotations as well as analyzed values as dict
+        analyze image and return image including annotations as well as analyzed values as dict - using YOLOv5
 
-        Parameters:
+        Args:
             file_path (str): path of the file to be analyzed
             threshold (float): threshold in %, if threshold=-1 use default threshold
             return_image (bool): return images
