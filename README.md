@@ -2,7 +2,7 @@
 
 This is an easy way to create a self-trained detection model.
 
-## Install preconditions
+## Install prerequisites
 
 ```commandline
 sudo apt-get install python3-opencv
@@ -82,9 +82,10 @@ nvidia-smi
       ```
      
    * This command will (re)create data in two folders:
-     * [train-check](train-check) contains data sorted by label. If something isn't as expected go back to 3. and 
+     * [train/check](train/check) contains data sorted by label. If something isn't as expected go back to 3. and 
        adapt your source data
      * [train](train) contains the data for the training.
+     
 
 ## Train model
 
